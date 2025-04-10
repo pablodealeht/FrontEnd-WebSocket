@@ -1,5 +1,5 @@
 export interface WindowInfo {
-    Handle: number;   // 👈 este lo vas a usar como ID principal
+    Handle: number;
     Title: string;
     X: number;
     Y: number;

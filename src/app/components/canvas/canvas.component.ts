@@ -36,21 +36,6 @@ export class CanvasComponent implements OnInit {
       this.wsService.send('obtener-ventanas');
     }, 2000);
   }
-  
-  // ngOnInit(): void {
-  //   this.wsService.connect('ws://localhost:5197/ws');
-  //   this.wsService.getMessages().subscribe((data: any) => {
-  //     if (data?.pantalla && data?.ventanas) {
-  //       this.pantallaWidth = data.pantalla.width;
-  //       this.pantallaHeight = data.pantalla.height;
-  //       this.scale = window.innerWidth / this.pantallaWidth;
-  //       this.ventanas = data.ventanas;
-  //     } else {
-  //       console.warn('[CanvasComponent] Mensaje inesperado:', data);
-  //     }
-  //   });
-  // }
-
   startDrag(event: MouseEvent, index: number) {
     const ventana = this.ventanas[index];
   
@@ -68,7 +53,6 @@ export class CanvasComponent implements OnInit {
       // Al final de onMouseUp:
       
       
-      // 🔥 Enviar mensaje al backend para mover la ventana real
       this.wsService.send({
         tipo: 'mover',
         handle: ventana.Handle,
@@ -79,17 +63,16 @@ export class CanvasComponent implements OnInit {
     
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    this.ventanas = [...this.ventanas]; // 👈 esto fuerza la re-renderización
+    this.ventanas = [...this.ventanas]; // re-renderización
   }
   
   
   cerrarVentana(index: number) {
   const ventana = this.ventanas[index];
 
-  // Eliminamos del array
   this.ventanas.splice(index, 1);
 
-  // (Opcional) Enviar mensaje al backend
+  // (Opcional) Enviar mensaje al backend para cerrar la ventana
   this.wsService.send(JSON.stringify({
     tipo: 'cerrar',
     title: ventana.Title

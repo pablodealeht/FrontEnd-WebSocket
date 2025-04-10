@@ -1,10 +1,19 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common'; 
 import { CanvasComponent } from './components/canvas/canvas.component';
+import { LoginComponent } from './components/login/login.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CanvasComponent], // 👈 Importamos el otro standalone acá
-  template: `<app-canvas></app-canvas>`, // 👈 ya no hace falta html externo si querés
+  imports: [CommonModule, CanvasComponent, LoginComponent],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {}
+export class AppComponent {
+  logueado = localStorage.getItem('logueado') === 'true';
+
+  onLoginExitoso() {
+    this.logueado = true;
+  }
+}

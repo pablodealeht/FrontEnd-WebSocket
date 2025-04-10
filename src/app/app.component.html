@@ -1,1 +1,2 @@
-<app-canvas></app-canvas>
+<app-login *ngIf="!logueado" (loginExitoso)="onLoginExitoso()"></app-login>
+<app-canvas *ngIf="logueado"></app-canvas>
