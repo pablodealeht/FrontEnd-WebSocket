@@ -1,0 +1,17 @@
+<div class="canvas" [style.transform]="'scale(' + scale + ')'">
+    <div class="ventana" *ngFor="let v of ventanas, let i = index" [style.left.px]="v.X" [style.top.px]="v.Y"
+        [style.width.px]="v.Width" [style.height.px]="v.Height">
+        <!-- <div class="ventana-header" [ngClass]="{ 'chrome': v.Title.includes('chrome'), 'notepad': v.Title.includes('notepad') }"> -->
+        <div class="ventana-header"
+            [ngClass]="{ 'chrome': v.Title.includes('chrome'), 'notepad': v.Title.includes('notepad') }"
+            (mousedown)="startDrag($event, i)">
+
+            <span class="titulo">{{ v.Title }}</span>
+            <span class="cerrar" (click)="cerrarVentana(i)">❌</span>
+
+        </div>
+
+        <!-- contenido vacío por ahora -->
+        <div class="ventana-cuerpo"></div>
+    </div>
+</div>

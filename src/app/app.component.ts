@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { CanvasComponent } from './components/canvas/canvas.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  standalone: true,
+  imports: [CanvasComponent], // 👈 Importamos el otro standalone acá
+  template: `<app-canvas></app-canvas>`, // 👈 ya no hace falta html externo si querés
 })
-export class AppComponent {
-  title = 'ventana-sync-app';
-}
+export class AppComponent {}

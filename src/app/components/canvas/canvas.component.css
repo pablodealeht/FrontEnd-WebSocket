@@ -1,0 +1,57 @@
+.canvas {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    transform-origin: top left;
+    background-color: white;
+  }
+  
+  .ventana {
+    position: absolute;
+    border: 3px solid black;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ventana-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 5px;
+    height: 20px;
+    box-sizing: border-box;
+    border-bottom: 1px solid black;
+    color: black;
+  }
+  
+  .titulo {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .cerrar {
+    color: red;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .chrome {
+    background-color: #ffdddd;
+    border: 1px solid red;
+  }
+  
+  .notepad {
+    background-color: #dde0ff;
+    border: 1px solid blue;
+  }
+  
+  .ventana-cuerpo {
+    flex: 1;
+    background-color: white;
+  }
+  
