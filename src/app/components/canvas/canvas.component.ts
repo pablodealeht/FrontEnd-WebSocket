@@ -50,21 +50,30 @@ export class CanvasComponent implements OnInit {
     const onMouseUp = () => {
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
-      // Al final de onMouseUp:
-      
-      
-      this.wsService.send({
-        tipo: 'mover',
-        handle: ventana.Handle,
-        x: Math.round(ventana.X),
-        y: Math.round(ventana.Y)
-      });
+  
+      const nuevaX = Math.round(ventana.X);
+      const nuevaY = Math.round(ventana.Y);
+  
+      const colisiona = this.hayColision(nuevaX, nuevaY, ventana.Width, ventana.Height, index);
+  
+      if (!colisiona) {
+        this.wsService.send({
+          tipo: 'mover',
+          handle: ventana.Handle,
+          x: nuevaX,
+          y: nuevaY
+        });
+      } else {
+        console.warn('Movimiento cancelado por colisión');
+        this.wsService.send('obtener-ventanas'); // Refresca desde el backend
+      }
     };
-    
+  
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
-    this.ventanas = [...this.ventanas]; // re-renderización
+    this.ventanas = [...this.ventanas]; // Fuerza re-render
   }
+  
   
   
   cerrarVentana(index: number) {
@@ -72,13 +81,33 @@ export class CanvasComponent implements OnInit {
 
   this.ventanas.splice(index, 1);
 
-  // (Opcional) Enviar mensaje al backend para cerrar la ventana
   this.wsService.send(JSON.stringify({
     tipo: 'cerrar',
     title: ventana.Title
   }));
   
 }
+
+private hayColision(x: number, y: number, width: number, height: number, indexActual: number): boolean {
+  return this.ventanas.some((ventana, index) => {
+    if (index === indexActual) return false;
+
+    const x1 = x;
+    const y1 = y;
+    const x2 = x + width;
+    const y2 = y + height;
+
+    const vx1 = ventana.X;
+    const vy1 = ventana.Y;
+    const vx2 = ventana.X + ventana.Width;
+    const vy2 = ventana.Y + ventana.Height;
+
+    // Si se solapan, hay colisión
+    return !(x2 <= vx1 || x1 >= vx2 || y2 <= vy1 || y1 >= vy2);
+  });
+}
+
+
 
 
 }
