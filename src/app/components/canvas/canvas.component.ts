@@ -34,7 +34,7 @@ export class CanvasComponent implements OnInit {
   
     setInterval(() => {
       this.wsService.send('obtener-ventanas');
-    }, 2000);
+    }, 500);
   }
   startDrag(event: MouseEvent, index: number) {
     const ventana = this.ventanas[index];
@@ -73,6 +73,44 @@ export class CanvasComponent implements OnInit {
     window.addEventListener('mouseup', onMouseUp);
     this.ventanas = [...this.ventanas]; // Fuerza re-render
   }
+
+  startResize(event: MouseEvent, index: number) {
+    event.stopPropagation(); // 👈 evitar que dispare drag
+    const ventana = this.ventanas[index];
+  
+    const inicioX = event.clientX;
+    const inicioY = event.clientY;
+    const inicioWidth = ventana.Width;
+    const inicioHeight = ventana.Height;
+  
+    const onMouseMove = (e: MouseEvent) => {
+      const diffX = (e.clientX - inicioX) / this.scale;
+      const diffY = (e.clientY - inicioY) / this.scale;
+  
+      ventana.Width = Math.max(50, inicioWidth + diffX); // mínimo 50px
+      ventana.Height = Math.max(50, inicioHeight + diffY);
+      this.ventanas = [...this.ventanas]; // Forzar re-render
+    };
+  
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+  
+      const nuevaAncho = Math.round(ventana.Width);
+      const nuevaAlto = Math.round(ventana.Height);
+  
+      this.wsService.send({
+        tipo: 'resize',
+        handle: ventana.Handle,
+        width: nuevaAncho,
+        height: nuevaAlto
+      });
+    };
+  
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  }
+  
   
   
   

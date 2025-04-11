@@ -54,4 +54,17 @@
     flex: 1;
     background-color: white;
   }
+
+  .resizer {
+    width: 12px;
+    height: 12px;
+    background: #ccc;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    cursor: se-resize;
+    z-index: 10;
+  }
+  
+  
   
