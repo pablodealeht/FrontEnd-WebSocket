@@ -1,26 +1,34 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   username = '';
   password = '';
+  error = '';
 
-  @Output() loginExitoso = new EventEmitter<void>();
+  constructor(private http: HttpClient, private router: Router) {}
 
   login() {
-    if (this.username === 'admin' && this.password === '1234') {
-      localStorage.setItem('logueado', 'true');
-      this.loginExitoso.emit();
-    } else {
-      alert('Credenciales incorrectas');
-    }
+    const dto = { email: this.username, password: this.password };
+
+    this.http.post<{ token: string }>('http://localhost:5197/api/auth/login', dto).subscribe({
+      next: (res) => {
+        localStorage.setItem('jwt', res.token);
+        this.router.navigate(['/canvas']); // Redirige después de loguear
+      },
+      error: () => {
+        this.error = 'Credenciales incorrectas';
+      }
+    });
   }
 }

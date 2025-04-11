@@ -9,27 +9,31 @@ export class WebSocketService {
   private socket: WebSocket | null = null;
   private messageSubject = new Subject<any>();
 
-  connect(url: string): void {
-    this.socket = new WebSocket(url);
+ // WebSocketService.ts
+ connect(jwt: string): void {
+  const url = `ws://localhost:5197/ws?access_token=${jwt}`;
+  this.socket = new WebSocket(url);
 
-    this.socket.onopen = () => {
-      console.log('[WebSocketService] Conectado al servidor');
-      this.send('obtener-ventanas');
-    };
+  this.socket.onopen = () => {
+    console.log('[WebSocketService] Conectado al servidor');
+    this.send('obtener-ventanas');
+  };
 
-    this.socket.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        this.messageSubject.next(data);
-      } catch (e) {
-        console.error('[WebSocketService] Error al parsear mensaje:', e, event.data);
-      }
-    };
+  this.socket.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      this.messageSubject.next(data);
+    } catch (e) {
+      console.error('[WebSocketService] Error al parsear mensaje:', e, event.data);
+    }
+  };
 
-    this.socket.onerror = (error) => {
-      console.error('[WebSocketService] Error:', error);
-    };
-  }
+  this.socket.onerror = (error) => {
+    console.error('[WebSocketService] Error:', error);
+  };
+}
+
+
 
   send(data: any): void {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {

@@ -15,11 +15,20 @@ export class CanvasComponent implements OnInit {
   pantallaWidth = 1920;
   pantallaHeight = 1080;
   scale = 1;
+  
 
   constructor(private wsService: WebSocketService) {}
 
   ngOnInit(): void {
-    this.wsService.connect('ws://localhost:5197/ws');
+    const jwt = localStorage.getItem('jwt');
+
+    if (!jwt) {
+      console.error('No hay JWT guardado. No se puede conectar al WebSocket.');
+      return;
+    }
+  
+    this.wsService.connect(jwt); // 👈 le pasás el token
+
   
     this.wsService.getMessages().subscribe((data: any) => {
       if (data?.pantalla && data?.ventanas) {
@@ -36,6 +45,7 @@ export class CanvasComponent implements OnInit {
       this.wsService.send('obtener-ventanas');
     }, 500);
   }
+  
   startDrag(event: MouseEvent, index: number) {
     const ventana = this.ventanas[index];
   
@@ -75,21 +85,21 @@ export class CanvasComponent implements OnInit {
   }
 
   startResize(event: MouseEvent, index: number) {
-    event.stopPropagation(); // 👈 evitar que dispare drag
+    event.stopPropagation(); // 👈 evita que también dispare el startDrag
     const ventana = this.ventanas[index];
   
-    const inicioX = event.clientX;
-    const inicioY = event.clientY;
-    const inicioWidth = ventana.Width;
-    const inicioHeight = ventana.Height;
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startWidth = ventana.Width;
+    const startHeight = ventana.Height;
   
     const onMouseMove = (e: MouseEvent) => {
-      const diffX = (e.clientX - inicioX) / this.scale;
-      const diffY = (e.clientY - inicioY) / this.scale;
+      const nuevaAncho = Math.max(100, startWidth + (e.clientX - startX)); // 👈 mínimo 100px
+      const nuevaAlto = Math.max(50, startHeight + (e.clientY - startY));  // 👈 mínimo 50px
   
-      ventana.Width = Math.max(50, inicioWidth + diffX); // mínimo 50px
-      ventana.Height = Math.max(50, inicioHeight + diffY);
-      this.ventanas = [...this.ventanas]; // Forzar re-render
+      ventana.Width = nuevaAncho;
+      ventana.Height = nuevaAlto;
+      this.ventanas = [...this.ventanas]; // 🔁 re-render
     };
   
     const onMouseUp = () => {
@@ -99,6 +109,7 @@ export class CanvasComponent implements OnInit {
       const nuevaAncho = Math.round(ventana.Width);
       const nuevaAlto = Math.round(ventana.Height);
   
+      // 🚀 Enviamos al backend
       this.wsService.send({
         tipo: 'resize',
         handle: ventana.Handle,
@@ -110,6 +121,7 @@ export class CanvasComponent implements OnInit {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
   }
+  
   
   
   
